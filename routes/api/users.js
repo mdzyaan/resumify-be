@@ -8,7 +8,7 @@ const validateLoginInput = require("../../validation/login");
 const User = require("../../models/User");
 const secretOrKey = process.env.SECRET;
 
-router.get("/profile", async (req, res) => {
+router.get("/profile", (req, res) => {
   const token = req.body.token;
   jwt.verify(token, secretOrKey, function(err, decode) {
     if (!err) {
@@ -22,7 +22,7 @@ router.get("/profile", async (req, res) => {
 });
 
 
-router.post("/profile", async (req, res) => {
+router.post("/profile", (req, res) => {
   const token = req.body.token || '';
   jwt.verify(token, secretOrKey, function(err, decode) {
     if (!err) {      
@@ -44,12 +44,13 @@ router.post("/profile", async (req, res) => {
 
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", (req, res) => {
   
   const { errors, isValid } = validateRegisterInput(req.body);
   if (!isValid) {
     return res.status(400).json(errors);
   }
+  console.log("register")
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ success: false,message: "Email already exists." });
@@ -60,6 +61,8 @@ router.post("/register", async (req, res) => {
         password: req.body.password,
         mobile: req.body.mobile
       });
+      console.log("newUser", newUser)
+
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
@@ -78,7 +81,7 @@ router.post("/register", async (req, res) => {
   });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", (req, res) => {
   const { errors, isValid } = validateLoginInput(req.body);
   if (!isValid) {
     return res.status(400).json(errors);
