@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const users = require("./routes/api/users");
 var cors = require("cors");
+require('dotenv').config();
 
 const app = express();
 // Bodyparser middleware
@@ -22,10 +23,10 @@ app.use(
   })
 );
 // DB Config
-const db = require("./config/keys").mongoURI;
+const dbUri = process.env.MONGO_URI;
 // Connect to MongoDB
 mongoose
-  .connect(db, { useNewUrlParser: true })
+  .connect(dbUri, { useNewUrlParser: true })
   .then(() => console.log("MongoDB successfully connected"))
   .catch(err => console.log(err));
 

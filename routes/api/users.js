@@ -2,17 +2,15 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const keys = require("../../config/keys");
-// Load input validation
+require('dotenv').config();
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
-// Load User model
 const User = require("../../models/User");
-
+const secretOrKey = process.env.SECRET;
 
 router.get("/profile", async (req, res) => {
   const token = req.body.token;
-  jwt.verify(token, keys.secretOrKey, function(err, decode) {
+  jwt.verify(token, secretOrKey, function(err, decode) {
     if (!err) {
       User.findOne({_id: decode.id}).then(users => {
         if (users) res.status(200).json(users);
@@ -26,7 +24,7 @@ router.get("/profile", async (req, res) => {
 
 router.post("/profile", async (req, res) => {
   const token = req.body.token || '';
-  jwt.verify(token, keys.secretOrKey, function(err, decode) {
+  jwt.verify(token, secretOrKey, function(err, decode) {
     if (!err) {      
       User.update(
         { _id: decode.id },
@@ -52,7 +50,6 @@ router.post("/register", async (req, res) => {
   if (!isValid) {
     return res.status(400).json(errors);
   }
-  console.log("register", req.body);
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ success: false,message: "Email already exists." });
@@ -99,21 +96,13 @@ router.post("/login", async (req, res) => {
           id: user.id,
           name: user.name
         };
-        jwt.sign(
-          payload,
-          keys.secretOrKey,
-          {
-            expiresIn: 31556926 // 1 year in seconds
-          },
-          (err, token) => {
-            res
-            .status(200)
-            .json({
-              success: true,
-              token:  token
-            });
-          }
-        );
+        const token = jwt.sign(payload, secretOrKey, { expiresIn: 31556926 });
+        return res
+          .status(200)
+          .json({
+            success: true,
+            token: token
+          });
       } else {
         return res
           .status(400)
