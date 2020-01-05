@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", 'https://resumify-fe.herokuapp.com'],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
