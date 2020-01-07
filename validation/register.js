@@ -45,7 +45,6 @@ module.exports = function validateRegisterInput(data) {
             ? "Passwords must match."
             : errors.message + " and Passwords must match.";
   }
-      console.log("data", errors);
 
   return {
     errors,
